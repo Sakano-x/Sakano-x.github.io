@@ -671,61 +671,15 @@
     <div class="article-entry" itemprop="articleBody">
       
         <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>对于小米路由器 4 以前的机型，官方固件的优化都不够好；功能少，稳定性不高，断流的情况也时常发生，而且穿墙性能较差。有一天，我终于受不了了，在网上寻找了许多关于路由器刷机的教程。既然手机能刷机，那咱们给路由器也刷个机<strong>吧</strong>！</p>
-<h5 id="声明"><a href="#声明" class="headerlink" title="声明"></a>声明</h5><ul>
-<li>本文参考了 <a href="https://openwrt.org/toh/xiaomi/mir3?s[]=xiaomi" target="_blank" rel="noopener">OpenWrt Wireless 官网</a> 和 <a href="https://www.right.com.cn/forum/thread-212965-1-1.html" target="_blank" rel="noopener">X-WRT 官方贴</a>，并对其部分步骤加以整理。</li>
-<li>此教程<strong>仅适用于小米路由器 3</strong> ，并且未在其他型号的路由器上做过测试。</li>
-<li>建议刷机前先熟悉 Linux 命令</li>
-<li><strong><font color=red size=4>刷机有风险，刷机需谨慎！</font></strong></li>
-</ul>
-<hr>
-<h3 id="1-解锁-SSH-权限"><a href="#1-解锁-SSH-权限" class="headerlink" title="1. 解锁 SSH 权限"></a>1. 解锁 SSH 权限</h3><p>这一步有两种方法，第一种是降级后利用漏洞进行 HTTP 渗透攻击；第二种是在官网申请 SSH 并刷入工具包。下面我会讲详细操作，任选一种方法即可，<strong>推荐使用方法一</strong>，方便。</p>
-<h5 id="方法一"><a href="#方法一" class="headerlink" title="方法一"></a>方法一</h5><p>下载 <a href="https://eduinhk-my.sharepoint.com/:u:/g/personal/lino_kakeri_eduinhk_onmicrosoft_com/EXOTO-H9ZzhLmtybqUg6ZggBGmT9miyPOzEHLl2_DOn-Lg?e=KloiPx" target="_blank" rel="noopener">2.11.20 降级包</a> ，在路由器管理页面中 常用设置 &gt; 系统状态 选择手动升级</p>
-<p>过完设置向导后，正常登录管理页面，打开地址栏，你会看到形如 <code>http://192.168.31.1/cgi-bin/luci/;stok=&lt;STOK&gt;/web/home#router</code> 的文本，将这里 <code>&lt;STOK&gt;</code> 的值记录下来。</p>
-<p>依次访问下面这三条 URL ，请注意将 URL 中 <code>&lt;STOK&gt;</code> 的值替换为刚刚记录下来的</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">http://192.168.31.1/cgi-bin/luci/;stok=&lt;STOK&gt;/api/xqnetwork/set_wifi_ap?ssid=Xiaomi&amp;encryption=NONE&amp;enctype=NONE&amp;channel=1%3Bnvram%20set%20ssh%5Fen%3D1%3B%20nvram%20commit</span><br><span class="line">http://192.168.31.1/cgi-bin/luci/;stok=&lt;STOK&gt;/api/xqnetwork/set_wifi_ap?ssid=Xiaomi&amp;encryption=NONE&amp;enctype=NONE&amp;channel=1%3Bsed%20%2Di%20%22%3Ax%3AN%3As%2Fif%20%5C%5B%2E%2A%5C%3B%20then%5Cn%2E%2Areturn%200%5Cn%2E%2Afi%2F%23tb%2F%3Bb%20x%22%20%2Fetc%2Finit.d%2Fdropbear</span><br><span class="line">http://192.168.31.1/cgi-bin/luci/;stok=&lt;STOK&gt;/api/xqnetwork/set_wifi_ap?ssid=Xiaomi&amp;encryption=NONE&amp;enctype=NONE&amp;channel=1%3B%2Fetc%2Finit.d%2Fdropbear%20start</span><br></pre></td></tr></table></figure>
-
-<p>在访问每一条 URL 后，正常情况都会显示 <code>{&quot;msg&quot;:&quot;未能连接到指定WiFi(Probe timeout)&quot;,&quot;code&quot;:1616}</code></p>
-<p>接下来，访问下面这条 URL ，<code>&lt;OLDPWD&gt;</code> 为登录路由器管理页面的密码，<code>NEWPWD</code> 为待会使用 SSH 连接的新密码。</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">http://192.168.31.1/cgi-bin/luci/;stok=&lt;STOK&gt;/api/xqsystem/set_name_password?oldPwd=&lt;OLDPWD&gt;&amp;newPwd=&lt;NEWPWD&gt;</span><br></pre></td></tr></table></figure>
-
-<p>访问后，显示 <code>{&quot;code&quot;:0}</code> ，则表明 SSH 已成功开启。</p>
-<h5 id="方法二"><a href="#方法二" class="headerlink" title="方法二"></a>方法二</h5><p>在 <a href="http://www1.miwifi.com/miwifi_download.html" target="_blank" rel="noopener">官网</a> 下载开发版固件并在路由器管理页面中手动升级，之后在官网 <a href="http://d.miwifi.com/rom/ssh" target="_blank" rel="noopener">开启 SSH 工具</a> ，照着网页内的步骤刷入工具包即可。</p>
-<h3 id="2-通过-SSH-连接"><a href="#2-通过-SSH-连接" class="headerlink" title="2. 通过 SSH 连接"></a>2. 通过 SSH 连接</h3><p>首先，准备一个 SSH 工具，连接到路由器</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ssh root@192.168.31.1</span><br></pre></td></tr></table></figure>
-
-<p>登录密码为刚刚设置的 <code>NEWPWD</code></p>
-<h3 id="3-启用串行端口"><a href="#3-启用串行端口" class="headerlink" title="3. 启用串行端口"></a>3. 启用串行端口</h3><p>依次输入以下命令<br><font size=2><strong>非常重要，因为小米默认锁死串口，若不开启，刷机失败或者出现意外，无法救回</strong></font></p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">nvram <span class="built_in">set</span> flag_last_success=1</span><br><span class="line">nvram <span class="built_in">set</span> boot_wait=on</span><br><span class="line">nvram <span class="built_in">set</span> uart_en=1</span><br><span class="line">nvram commit</span><br><span class="line">reboot</span><br></pre></td></tr></table></figure>
-
-<p>最后会重启</p>
-<h3 id="4-刷入固件"><a href="#4-刷入固件" class="headerlink" title="4. 刷入固件"></a>4. 刷入固件</h3><p>此步骤有两种方法，<strong>方法一适用于从官方固件刷入 X-WRT ，方法二适用于从其他第三方固件刷入 X-WRT</strong> 。若你正在使用的固件为官方固件，则使用方法一。</p>
-<h5 id="方法一-1"><a href="#方法一-1" class="headerlink" title="方法一"></a>方法一</h5><p>在 <a href="https://downloads.x-wrt.com/rom/" target="_blank" rel="noopener">X-WRT 下载页</a> 找到 Xiaomi Mi Router R3，下载文件末尾为 <code>kernel1.bin</code> 和 <code>rootfs0.bin</code> 的文件。</p>
-<p>将文件上传至路由器的 /tmp 目录下：（在本地命令行执行）</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">scp &lt;kernel1-file-path&gt; root@192.168.31.1:/tmp/kernel1.bin</span><br><span class="line">scp &lt;rootfs0-file-path&gt; root@192.168.31.1:/tmp/rootfs0.bin</span><br></pre></td></tr></table></figure>
-
-<p>其中 <code>&lt;kernel1-file-path&gt;</code> 和 <code>&lt;rootfs0-file-path&gt;</code> 为下载好的那两个文件的路径。</p>
-<p>接下来，使用 SSH 连接到路由器，刷入固件</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ssh root@192.168.31.1</span><br><span class="line">mtd write /tmp/kernel1.bin kernel1</span><br><span class="line">mtd write /tmp/rootfs0.bin rootfs0</span><br><span class="line">reboot</span><br></pre></td></tr></table></figure>
-
-<h5 id="方法二-1"><a href="#方法二-1" class="headerlink" title="方法二"></a>方法二</h5><p>在 <a href="https://downloads.x-wrt.com/rom/" target="_blank" rel="noopener">X-WRT 下载页</a> 找到 Xiaomi Mi Router R3，下载文件末尾为 <code>breed-factory.bin</code> 的文件。</p>
-<p>将文件上传至路由器的 /tmp 目录下：（在本地命令行执行）</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">scp &lt;breed-factory-file-path&gt; root@192.168.31.1:/tmp/breed-factory.bin</span><br></pre></td></tr></table></figure>
-
-<p>其中 <code>breed-factory-file-path</code> 为下载好的那个文件的路径。</p>
-<p>接下来，使用 SSH 连接到路由器，刷入固件</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ssh root@192.168.31.1</span><br><span class="line">mtd write /tmp/breed-factory.bin firmware</span><br><span class="line">reboot</span><br></pre></td></tr></table></figure>
-
-<h3 id="5-开始使用"><a href="#5-开始使用" class="headerlink" title="5. 开始使用"></a>5. 开始使用</h3><p>等待重启完成，即可通过 Wi-Fi 连接到路由器</p>
-<blockquote>
-<p>默认 SSID ：X-WRT_XXXX<br>默认密码 ：88888888<br>固件管理界面：192.168.15.1<br>管理界面账户密码：root/admin</p>
-</blockquote>
-<p>更多关于固件的功能及使用方法可前往 <a href="https://www.right.com.cn/forum/thread-212965-1-1.html" target="_blank" rel="noopener">论坛专帖</a> 或 <a href="https://blog.x-wrt.com" target="_blank" rel="noopener">开发博客</a> 查看。</p>
-<h3 id="6-系统更新"><a href="#6-系统更新" class="headerlink" title="6. 系统更新"></a>6. 系统更新</h3><p>在 <a href="https://downloads.x-wrt.com/rom/" target="_blank" rel="noopener">X-WRT 下载页</a> 找到 Xiaomi Mi Router R3，下载文件末尾为 <code>sysupgrade.bin</code> 的文件。</p>
-<p>进入路由器管理页，选择 系统 &gt; 备份/升级 &gt; 刷写新的固件，将文件上传即可。</p>
-
       
     </div>
     
+      
+        <div class="button readmore">
+          <a href="/post/xiaomi-r3-flash-xwrt/">
+            Read More <i class="fas fa-chevron-right"></i>
+          </a>
+        </div>
       
     
   </section>
@@ -822,48 +776,15 @@
 <li>易用性：与其他第三方固件相比更容易上手，管理页大部分信息简单又详细。</li>
 <li>功能多：什么 KMS，软加速，SSR，Clash，去广告应有尽有。</li>
 </ul>
-<p>本刷入方法理论与绝大多数已支持的机型通用。<br>刷入的固件为 hiboy 的 padavan 。</p>
-<hr>
-<h3 id="1-刷入-Breed"><a href="#1-刷入-Breed" class="headerlink" title="1. 刷入 Breed"></a>1. 刷入 Breed</h3><p>Breed 是一个 Bootloader<br><a href="https://www.right.com.cn/forum/thread-161906-1-1.html" target="_blank" rel="noopener">原贴</a> <a href="https://breed.hackpascal.net" target="_blank" rel="noopener">下载链接</a></p>
-<p>下载你的路由器型号所对应的 Breed<br><strong>建议先在原帖查看个别机型的注意事项</strong></p>
-<p>将 Breed 上传至路由器的 /tmp 目录下：（在本地命令行执行）<br><font color=grey size=2>如未开启 SSH ，百度“路由器型号+开启ssh教程”</font></p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">scp &lt;breed_file_path&gt; root@&lt;ip&gt;:/tmp/breed.bin</span><br><span class="line"><span class="comment">#执行后会让你输入 SSH 密码</span></span><br></pre></td></tr></table></figure>
-
-<p>其中 <code>&lt;breed-file-path&gt;</code> 为下载好的 Breed 的路径， <code>&lt;ip&gt;</code> 为路由器管理IP。</p>
-<p>将 Breed 刷入 Bootloader：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ssh root@&lt;ip&gt;</span><br><span class="line"><span class="comment">#先使用 SSH 连接到路由器</span></span><br><span class="line">mtd -r write /tmp/breed.bin Bootloader</span><br></pre></td></tr></table></figure>
-
-<p>刷入完成后会自动重启</p>
-<h3 id="2-进入-Breed-Web-控制台"><a href="#2-进入-Breed-Web-控制台" class="headerlink" title="2. 进入 Breed Web 控制台"></a>2. 进入 Breed Web 控制台</h3><p><font color=grey size=3>在 breed 下是没有无线信号的，必须要提前准备网线将电脑与路由连接。</font></p>
-<p>步骤：</p>
-<ol>
-<li><p>在命令行中输入 <code>ping &lt;ip&gt; -t</code></p>
-</li>
-<li><p>拔掉电源</p>
-</li>
-<li><p>按住复位键或 WPS 键不松，同时插入电源</p>
-</li>
-<li><p>ping 通之后即可松开按键</p>
-</li>
-<li><p>浏览器输入 <code>192.168.1.1</code> ，即可进入 breed 控制台</p>
-</li>
-</ol>
-<h3 id="3-刷入-Padavan"><a href="#3-刷入-Padavan" class="headerlink" title="3. 刷入 Padavan"></a>3. 刷入 Padavan</h3><p>Padavan 固件 <a href="https://www.right.com.cn/forum/thread-1515729-1-1.html" target="_blank" rel="noopener">更新贴</a> 、<a href="https://opt.cn2qq.com/padavan/" target="_blank" rel="noopener">下载链接</a></p>
-<ol>
-<li><p>下载你的路由器型号所对应的固件</p>
-</li>
-<li><p>在 Breed Web 恢复控制台中，选择 固件更新 &gt; 固件 ，并选择下载好的固件</p>
-</li>
-<li><p>刷入完成后，重启路由器即可。</p>
-</li>
-</ol>
-<blockquote>
-<p>默认密码：1234567890<br>固件管理界面：192.168.123.1<br>管理界面账户密码：admin/admin</p>
-</blockquote>
-
       
     </div>
     
+      
+        <div class="button readmore">
+          <a href="/post/padavan-flash-and-use/">
+            Read More <i class="fas fa-chevron-right"></i>
+          </a>
+        </div>
       
     
   </section>
