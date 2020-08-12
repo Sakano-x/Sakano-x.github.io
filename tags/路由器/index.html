@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-<head hexo-theme='https://volantis.js.org/#3.0-beta6'>
+<head hexo-theme='https://github.com/volantis-x/hexo-theme-volantis/releases/tag/3.0.0-rc.1'>
   <meta charset="utf-8">
   <!-- SEO相关 -->
   
@@ -264,18 +264,6 @@
             
             
               <li>
-                <a class="menuitem flat-box faa-parent animated-hover" 
-                  
-                  
-                  >
-                  <i class='fad fa-comment-dots fa-fw'></i>更多
-                </a>
-                
-                  <ul class="list-v">
-                    
-                      
-            
-              <li>
                 <a class="menuitem flat-box faa-parent animated-hover" href=/friends/
                   
                   
@@ -284,80 +272,6 @@
                   >
                   <i class='fal fa-link fa-fw'></i>友链
                 </a>
-                
-              </li>
-            
-          
-                    
-                      
-            
-              <li>
-                <a class="menuitem flat-box faa-parent animated-hover" 
-                  
-                  
-                  >
-                  <i class='fal fa-download fa-fw'></i>资源
-                </a>
-                
-                  <ul class="list-v">
-                    
-                      
-            
-              <li>
-                <a class="menuitem flat-box faa-parent animated-hover" href=https://pan.lino-kakeri.live/
-                  
-                  
-                  
-                    id="https:panlino-kakerilive"
-                  >
-                  <i class='fad fa-cloud fa-fw'></i>网盘
-                </a>
-                
-              </li>
-            
-          
-                    
-                  </ul>
-                
-              </li>
-            
-          
-                    
-                      
-            
-              <hr>
-            
-          
-                    
-                      
-            
-              <li>
-                <a class="menuitem flat-box faa-parent animated-hover" href=/donate/
-                  
-                  
-                  
-                    id="donate"
-                  >
-                  捐助下吧！
-                </a>
-                
-                  <ul class="list-v">
-                    
-                      
-            
-              <li class='header'>
-                感谢！！(*≧ω≦)
-              </li>
-            
-          
-                    
-                  </ul>
-                
-              </li>
-            
-          
-                    
-                  </ul>
                 
               </li>
             
@@ -484,18 +398,6 @@
               
             
               <li>
-                <a class="menuitem flat-box faa-parent animated-hover" 
-                  
-                  
-                  >
-                  <i class='fad fa-comment-dots fa-fw'></i>更多
-                </a>
-                
-                  <ul class="list-v">
-                    
-                      
-            
-              <li>
                 <a class="menuitem flat-box faa-parent animated-hover" href=/friends/
                   
                   
@@ -504,80 +406,6 @@
                   >
                   <i class='fal fa-link fa-fw'></i>友链
                 </a>
-                
-              </li>
-            
-          
-                    
-                      
-            
-              <li>
-                <a class="menuitem flat-box faa-parent animated-hover" 
-                  
-                  
-                  >
-                  <i class='fal fa-download fa-fw'></i>资源
-                </a>
-                
-                  <ul class="list-v">
-                    
-                      
-            
-              <li>
-                <a class="menuitem flat-box faa-parent animated-hover" href=https://pan.lino-kakeri.live/
-                  
-                  
-                  
-                    id="https:panlino-kakerilive"
-                  >
-                  <i class='fad fa-cloud fa-fw'></i>网盘
-                </a>
-                
-              </li>
-            
-          
-                    
-                  </ul>
-                
-              </li>
-            
-          
-                    
-                      
-            
-              <hr>
-            
-          
-                    
-                      
-            
-              <li>
-                <a class="menuitem flat-box faa-parent animated-hover" href=/donate/
-                  
-                  
-                  
-                    id="donate"
-                  >
-                  捐助下吧！
-                </a>
-                
-                  <ul class="list-v">
-                    
-                      
-            
-              <li class='header'>
-                感谢！！(*≧ω≦)
-              </li>
-            
-          
-                    
-                  </ul>
-                
-              </li>
-            
-          
-                    
-                  </ul>
                 
               </li>
             
@@ -1328,8 +1156,6 @@
 
 
 
-
-
   <script async src="https://cdn.jsdelivr.net/gh/volantis-x/cdn-volantis@2/js/instant_page.js" type="module" defer integrity="sha384-OeDn4XE77tdHo8pGtE1apMPmAipjoxUQ++eeJa6EtJCfHlvijigWiJpD7VDPWXV1"></script>
 
 
@@ -1490,6 +1316,23 @@
 
 
 <!-- scrollreveal -->
+
+  <script src="https://cdn.jsdelivr.net/npm/scrollreveal@4.0.6/dist/scrollreveal.min.js"></script>
+  <script type="text/javascript">
+    function pjax_scrollrebeal() {
+      ScrollReveal().reveal('.l_main .reveal', {
+        distance: '32px',
+        duration: '800',
+        interval: '20',
+        scale: '1',
+        easing: 'ease-out'
+      });
+    }
+
+    $(function () {
+      pjax_scrollrebeal();
+    });
+  </script>
 
 <!-- ******************************** -->
 
@@ -1681,6 +1524,8 @@
           }
         
         
+        
+          pjax_scrollrebeal();
         
         
           pjax_initCopyCode();
